@@ -1,4 +1,4 @@
-package uz.heeypay.ecom.vault;
+package uz.khakimjanovich.platform.vault;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.health.contributor.Health;

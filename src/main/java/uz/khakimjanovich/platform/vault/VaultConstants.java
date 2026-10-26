@@ -1,11 +1,11 @@
-package uz.heeypay.ecom.vault;
+package uz.khakimjanovich.platform.vault;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class VaultConstants {
 
-  public static final String PROPERTIES_PREFIX = "ecom.vault";
+  public static final String PROPERTIES_PREFIX = "platform.vault";
   public static final String DEFAULT_MOUNT = "secret";
 
   public static final String SIGNING_KEY_PATH = "merchants/%s";

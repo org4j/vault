@@ -1,4 +1,4 @@
-package uz.heeypay.ecom.vault;
+package uz.khakimjanovich.platform.vault;
 
 /** Vault didn't answer, or answered with an error: callers must fail closed. */
 public class VaultUnavailableException extends RuntimeException {

@@ -1,4 +1,4 @@
-package uz.heeypay.ecom.vault;
+package uz.khakimjanovich.platform.vault;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -24,7 +24,7 @@ class VaultPropertiesTest {
   @Test
   void aPathWithoutTheClientIdStopsStartup() {
     runner
-        .withPropertyValues("ecom.vault.signing-keys.path=merchants/")
+        .withPropertyValues("platform.vault.signing-keys.path=merchants/")
         .run(
             context ->
                 assertThat(context)

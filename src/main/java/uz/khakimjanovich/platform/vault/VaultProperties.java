@@ -1,4 +1,4 @@
-package uz.heeypay.ecom.vault;
+package uz.khakimjanovich.platform.vault;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
