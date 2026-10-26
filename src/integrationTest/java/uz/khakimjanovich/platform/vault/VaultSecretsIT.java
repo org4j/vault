@@ -1,4 +1,4 @@
-package uz.heeypay.ecom.vault;
+package uz.khakimjanovich.platform.vault;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

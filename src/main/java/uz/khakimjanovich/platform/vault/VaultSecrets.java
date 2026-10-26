@@ -1,4 +1,4 @@
-package uz.heeypay.ecom.vault;
+package uz.khakimjanovich.platform.vault;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
