@@ -1,4 +1,4 @@
-# vault
+# vault4j
 
 Secrets from HashiCorp Vault (KV version 2) through Spring Cloud Vault: read only and failing
 closed, with Vault's own sign-in (a token locally, AppRole or Kubernetes elsewhere) and token

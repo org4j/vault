@@ -1,0 +1,20 @@
+# check on every run, a snapshot on every push to develop, a release on main: the platform's
+# shared workflow for its libraries.
+name: library
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+permissions:
+  contents: write # the release tag and the GitHub release
+  packages: write # the snapshot and release packages
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  library:
+    uses: khakimjanovich/platform/.github/workflows/library.yml@develop

@@ -3,8 +3,8 @@
 // renewal from Spring Cloud Vault, a short cache for merchants' signing keys, and a client registry
 // read while the app runs.
 plugins {
-    id 'platform.library'
-    id 'platform.integration-test'
+    alias(libs.plugins.platform.library)
+    alias(libs.plugins.platform.integration.test)
 }
 
 dependencies {
