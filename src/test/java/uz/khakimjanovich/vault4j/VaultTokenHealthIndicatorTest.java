@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

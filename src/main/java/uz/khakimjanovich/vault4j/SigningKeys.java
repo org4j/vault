@@ -1,7 +1,7 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
-import static uz.khakimjanovich.platform.vault.VaultConstants.CLIENT_ID;
-import static uz.khakimjanovich.platform.vault.VaultConstants.DEFAULT_SIGNING_KEYS_MAX_ENTRIES;
+import static uz.khakimjanovich.vault4j.VaultConstants.CLIENT_ID;
+import static uz.khakimjanovich.vault4j.VaultConstants.DEFAULT_SIGNING_KEYS_MAX_ENTRIES;
 
 import java.time.Clock;
 import java.time.Duration;

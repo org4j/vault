@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import java.time.Duration;
 import org.jspecify.annotations.Nullable;
@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Neither has a default: without {@code path} there is no registry, and with it {@code cache-ttl}
  * must be set too.
  *
- * @param path the KV entry holding the clients, under {@code platform.vault.mount}
+ * @param path the KV entry holding the clients, under {@code vault4j.mount}
  * @param cacheTtl how long one read of it is used
  */
 @ConfigurationProperties(VaultConstants.CLIENTS_PREFIX)

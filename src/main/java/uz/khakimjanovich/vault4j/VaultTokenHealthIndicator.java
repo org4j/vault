@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.health.contributor.Health;

@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import java.time.Clock;
 import java.util.Objects;
@@ -13,7 +13,7 @@ import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.vault.core.VaultTemplate;
-import uz.khakimjanovich.platform.masking.Masking;
+import uz.khakimjanovich.masking4j.Masking;
 
 @AutoConfiguration(afterName = VaultConstants.SPRING_CLOUD_VAULT)
 @ConditionalOnBean(VaultTemplate.class)

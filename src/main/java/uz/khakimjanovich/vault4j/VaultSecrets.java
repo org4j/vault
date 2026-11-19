@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

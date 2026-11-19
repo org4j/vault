@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.vault.VaultContainer;
-import uz.khakimjanovich.platform.error.GeneralException;
+import uz.khakimjanovich.error4j.GeneralException;
 
 @Testcontainers
 class VaultTransitIT {
@@ -49,7 +49,7 @@ class VaultTransitIT {
   }
 
   private static ApplicationContextRunner app() {
-    return app("test", "platform.vault.transit.mount=transit");
+    return app("test", "vault4j.transit.mount=transit");
   }
 
   @Test
@@ -102,7 +102,7 @@ class VaultTransitIT {
 
   @Test
   void aTokenVaultRefusesIsUnavailable() {
-    app("wrong-token", "platform.vault.transit.mount=transit")
+    app("wrong-token", "vault4j.transit.mount=transit")
         .run(
             context ->
                 assertThatThrownBy(
@@ -125,13 +125,13 @@ class VaultTransitIT {
 
   @Test
   void aBlankMountStopsStartup() {
-    app("test", "platform.vault.transit.mount=")
+    app("test", "vault4j.transit.mount=")
         .run(
             context ->
                 assertThat(context)
                     .getFailure()
                     .rootCause()
-                    .hasMessageContaining("platform.vault.transit")
+                    .hasMessageContaining("vault4j.transit")
                     .hasMessageContaining("mount"));
   }
 

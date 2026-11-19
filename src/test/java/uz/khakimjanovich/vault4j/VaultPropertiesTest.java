@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -24,8 +24,8 @@ class VaultPropertiesTest {
   void theAppsPathFieldAndCacheTimeStart() {
     runner
         .withPropertyValues(
-            "platform.vault.signing-keys.path=clients/%s",
-            "platform.vault.signing-keys.field=key", "platform.vault.signing-keys.cache-ttl=30s")
+            "vault4j.signing-keys.path=clients/%s",
+            "vault4j.signing-keys.field=key", "vault4j.signing-keys.cache-ttl=30s")
         .run(context -> assertThat(context).hasSingleBean(SigningKeys.class));
   }
 
@@ -33,8 +33,8 @@ class VaultPropertiesTest {
   void aPathWithoutItsFieldStopsStartup() {
     runner
         .withPropertyValues(
-            "platform.vault.signing-keys.path=clients/%s",
-            "platform.vault.signing-keys.cache-ttl=30s")
+            "vault4j.signing-keys.path=clients/%s",
+            "vault4j.signing-keys.cache-ttl=30s")
         .run(
             context ->
                 assertThat(context)
@@ -47,7 +47,7 @@ class VaultPropertiesTest {
   void aPathWithoutItsCacheTimeStopsStartup() {
     runner
         .withPropertyValues(
-            "platform.vault.signing-keys.path=clients/%s", "platform.vault.signing-keys.field=key")
+            "vault4j.signing-keys.path=clients/%s", "vault4j.signing-keys.field=key")
         .run(
             context ->
                 assertThat(context)
@@ -60,9 +60,9 @@ class VaultPropertiesTest {
   void aPathWithoutTheClientIdStopsStartup() {
     runner
         .withPropertyValues(
-            "platform.vault.signing-keys.path=clients/",
-            "platform.vault.signing-keys.field=key",
-            "platform.vault.signing-keys.cache-ttl=30s")
+            "vault4j.signing-keys.path=clients/",
+            "vault4j.signing-keys.field=key",
+            "vault4j.signing-keys.cache-ttl=30s")
         .run(
             context ->
                 assertThat(context)

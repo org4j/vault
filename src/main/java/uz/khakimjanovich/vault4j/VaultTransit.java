@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -14,8 +14,8 @@ import org.springframework.vault.support.VaultHmacRequest;
 import org.springframework.vault.support.VaultTransitContext;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import uz.khakimjanovich.platform.error.GeneralException;
-import uz.khakimjanovich.platform.masking.Masking;
+import uz.khakimjanovich.error4j.GeneralException;
+import uz.khakimjanovich.masking4j.Masking;
 
 @Slf4j
 public class VaultTransit {

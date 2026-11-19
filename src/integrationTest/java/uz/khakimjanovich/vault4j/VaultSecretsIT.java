@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -63,7 +63,7 @@ class VaultSecretsIT {
   void aClientAddedInVaultIsFoundWithoutARestart() throws Exception {
     withToken("test")
         .withPropertyValues(
-            "platform.vault.clients.path=registry", "platform.vault.clients.cache-ttl=0s")
+            "vault4j.clients.path=registry", "vault4j.clients.cache-ttl=0s")
         .run(
             context -> {
               var registry = context.getBean(ClientRegistry.class);
@@ -79,7 +79,7 @@ class VaultSecretsIT {
   @Test
   void aClientRegistryWithoutItsCacheTtlStopsStartup() {
     withToken("test")
-        .withPropertyValues("platform.vault.clients.path=registry")
+        .withPropertyValues("vault4j.clients.path=registry")
         .run(
             context ->
                 assertThat(context.getStartupFailure())
@@ -164,9 +164,9 @@ class VaultSecretsIT {
     put("merchants/shop-3", encode("first"));
     withToken("test")
         .withPropertyValues(
-            "platform.vault.signing-keys.path=merchants/%s",
-            "platform.vault.signing-keys.field=signingKey",
-            "platform.vault.signing-keys.cache-ttl=1s")
+            "vault4j.signing-keys.path=merchants/%s",
+            "vault4j.signing-keys.field=signingKey",
+            "vault4j.signing-keys.cache-ttl=1s")
         .run(
             context -> {
               var keys = context.getBean(SigningKeys.class);

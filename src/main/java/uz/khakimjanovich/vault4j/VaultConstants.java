@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -7,19 +7,19 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class VaultConstants {
 
-  public static final String PROPERTIES_PREFIX = "platform.vault";
-  public static final String CLIENTS_PREFIX = "platform.vault.clients";
+  public static final String PROPERTIES_PREFIX = "vault4j";
+  public static final String CLIENTS_PREFIX = "vault4j.clients";
   public static final String CLIENTS_CACHE_TTL_MISSING =
-      "platform.vault.clients.cache-ttl is required with platform.vault.clients.path";
+      "vault4j.clients.cache-ttl is required with vault4j.clients.path";
   public static final String DEFAULT_MOUNT = "secret";
 
-  public static final String SIGNING_KEYS_PREFIX = "platform.vault.signing-keys";
+  public static final String SIGNING_KEYS_PREFIX = "vault4j.signing-keys";
   public static final String SIGNING_KEYS_FIELD_MISSING =
-      "platform.vault.signing-keys.field is required with platform.vault.signing-keys.path";
+      "vault4j.signing-keys.field is required with vault4j.signing-keys.path";
   public static final String SIGNING_KEYS_CACHE_TTL_MISSING =
-      "platform.vault.signing-keys.cache-ttl is required with platform.vault.signing-keys.path";
+      "vault4j.signing-keys.cache-ttl is required with vault4j.signing-keys.path";
   public static final int DEFAULT_SIGNING_KEYS_MAX_ENTRIES = 10_000;
-  public static final String TRANSIT_PREFIX = "platform.vault.transit";
+  public static final String TRANSIT_PREFIX = "vault4j.transit";
   public static final String TRANSIT_PREFIX_FORMAT = "vault:v%d:";
   public static final String TRANSIT_FAILED = "Vault Transit failed: {}: {}";
   public static final String TRANSIT_KEY_MISSING = "Vault Transit has no key {}";

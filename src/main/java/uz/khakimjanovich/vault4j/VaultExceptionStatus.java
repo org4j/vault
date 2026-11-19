@@ -1,6 +1,6 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
-import uz.khakimjanovich.platform.error.StatusThrowable;
+import uz.khakimjanovich.error4j.StatusThrowable;
 
 public enum VaultExceptionStatus implements StatusThrowable {
   VAULT_TRANSIT_UNAVAILABLE,

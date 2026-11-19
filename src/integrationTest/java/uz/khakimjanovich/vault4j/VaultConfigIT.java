@@ -1,4 +1,4 @@
-package uz.khakimjanovich.platform.vault;
+package uz.khakimjanovich.vault4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,8 +21,8 @@ class VaultConfigIT {
           .withVaultToken("test")
           .withInitCommand(
               "kv put secret/test"
-                  + " platform.example.key=bG9jYWwtb25seS1rZXktZm9yLWNhcmQtZGF0YS1rMSE="
-                  + " platform.otp.secret=from-vault");
+                  + " example.key=bG9jYWwtb25seS1rZXktZm9yLWNhcmQtZGF0YS1rMSE="
+                  + " otp4j.secret=from-vault");
 
   @Configuration(proxyBeanMethods = false)
   static class App {}
@@ -41,16 +41,16 @@ class VaultConfigIT {
   void secretsBindLikeAnyProperty() {
     try (var context = app("vault://secret/test").run()) {
       var environment = context.getEnvironment();
-      assertThat(environment.getProperty("platform.example.key"))
+      assertThat(environment.getProperty("example.key"))
           .isEqualTo("bG9jYWwtb25seS1rZXktZm9yLWNhcmQtZGF0YS1rMSE=");
-      assertThat(environment.getProperty("platform.otp.secret")).isEqualTo("from-vault");
+      assertThat(environment.getProperty("otp4j.secret")).isEqualTo("from-vault");
     }
   }
 
   @Test
   void aMissingPathLeavesItsPropertiesUnset() {
     try (var context = app("vault://secret/missing").run()) {
-      assertThat(context.getEnvironment().getProperty("platform.otp.secret")).isNull();
+      assertThat(context.getEnvironment().getProperty("otp4j.secret")).isNull();
     }
   }
 
@@ -71,7 +71,7 @@ class VaultConfigIT {
             .properties(
                 "spring.cloud.vault.uri=http://localhost:1", "spring.cloud.vault.fail-fast=false")
             .run()) {
-      assertThat(context.getEnvironment().getProperty("platform.otp.secret")).isNull();
+      assertThat(context.getEnvironment().getProperty("otp4j.secret")).isNull();
     }
   }
 }
