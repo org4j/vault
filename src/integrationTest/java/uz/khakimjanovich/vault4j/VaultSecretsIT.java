@@ -62,8 +62,7 @@ class VaultSecretsIT {
   @Test
   void aClientAddedInVaultIsFoundWithoutARestart() throws Exception {
     withToken("test")
-        .withPropertyValues(
-            "vault4j.clients.path=registry", "vault4j.clients.cache-ttl=0s")
+        .withPropertyValues("vault4j.clients.path=registry", "vault4j.clients.cache-ttl=0s")
         .run(
             context -> {
               var registry = context.getBean(ClientRegistry.class);
@@ -165,8 +164,7 @@ class VaultSecretsIT {
     withToken("test")
         .withPropertyValues(
             "vault4j.signing-keys.path=merchants/%s",
-            "vault4j.signing-keys.field=signingKey",
-            "vault4j.signing-keys.cache-ttl=1s")
+            "vault4j.signing-keys.field=signingKey", "vault4j.signing-keys.cache-ttl=1s")
         .run(
             context -> {
               var keys = context.getBean(SigningKeys.class);

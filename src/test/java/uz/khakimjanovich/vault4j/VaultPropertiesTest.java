@@ -33,8 +33,7 @@ class VaultPropertiesTest {
   void aPathWithoutItsFieldStopsStartup() {
     runner
         .withPropertyValues(
-            "vault4j.signing-keys.path=clients/%s",
-            "vault4j.signing-keys.cache-ttl=30s")
+            "vault4j.signing-keys.path=clients/%s", "vault4j.signing-keys.cache-ttl=30s")
         .run(
             context ->
                 assertThat(context)
