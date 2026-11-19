@@ -1,4 +1,4 @@
-# check on every push and pull request; a tag vX.Y.Z on 1.x releases: the platform's shared workflow
+# check on every push and pull request; a tag vX.Y.Z on 1.x releases: org4j's shared workflow
 # for its libraries.
 name: library
 
@@ -18,4 +18,4 @@ concurrency:
 
 jobs:
   library:
-    uses: khakimjanovich/platform/.github/workflows/library.yml@1.x
+    uses: org4j/gradle/.github/workflows/library.yml@1.x

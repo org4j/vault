@@ -1,4 +1,4 @@
-# vault4j
+# vault
 
 Secrets from HashiCorp Vault (KV version 2) through Spring Cloud Vault: read only and failing
 closed, with Vault's own sign-in (a token locally, AppRole or Kubernetes elsewhere) and token
@@ -7,7 +7,7 @@ API clients' request-signing keys a short time so a burst of signed requests rea
 seals values with Vault Transit, whose keys never leave Vault.
 
 ```groovy
-implementation libs.vault4j
+implementation libs.vault
 ```
 
 Spring Vault stays inside the library: a service uses `VaultSecrets`, `SigningKeys`, `ClientRegistry`
@@ -28,18 +28,18 @@ spring:
 
 `VaultSecrets.get(path)` gives the latest version of a secret, empty if there is none, and throws
 `VaultUnavailableException` if Vault can't be read: it refuses, or it doesn't answer at all.
-`SigningKeys` (with `vault4j.signing-keys.path`): `find(clientId)` gives a client's signing
+`SigningKeys` (with `org4j.vault.signing-keys.path`): `find(clientId)` gives a client's signing
 key (base64 in Vault, at the app's path and field), empty if none is set or the id can't be a
 client id (`[A-Za-z0-9_-][A-Za-z0-9._-]*`, never a path). Where the keys are is the app's own: the
 library names no path or field.
-`ClientRegistry` (with `vault4j.clients.path`) is an app's clients kept in one KV entry, one
+`ClientRegistry` (with `org4j.vault.clients.path`) is an app's clients kept in one KV entry, one
 key per client id, its value the client's record: `find(clientId)` and `all()` give them as they are,
 unread (the record's format is the app's, parsed by the app alone). The entry is read once per
 `cache-ttl`; past that a failed read throws, never an old copy, so a client added or taken away in
 Vault counts without a restart. It holds an app's own per-client data, never permissions: who may
 call what is granted in Keycloak.
 
-`VaultTransit` (with `vault4j.transit.mount`): the module names the key and gives a context
+`VaultTransit` (with `org4j.vault.transit.mount`): the module names the key and gives a context
 that says where the value lives (`<table>.<column>:<row id>`); with a derived key
 (`derived=true`) a ciphertext copied to another row or column does not open.
 
@@ -60,13 +60,13 @@ every index. The library names no key: the infra creates them (`vault secrets en
 
 | Property | Default | What |
 |---|---|---|
-| `vault4j.mount` | `secret` | the KV version 2 mount |
-| `vault4j.signing-keys.path` | none | a client's key entry, `%s` its client id (required in the path); unset, there are no signing keys |
-| `vault4j.signing-keys.field` | none, required with `path` | the entry's key holding the base64 signing key |
-| `vault4j.signing-keys.cache-ttl` | none, required with `path` | how long a key read is used; a missing key is never kept, and a Vault failure never answers with an old key |
-| `vault4j.clients.path` | none | the client registry's KV entry; unset, there is no registry |
-| `vault4j.clients.cache-ttl` | none, required with `path` | how long one read of the registry is used |
-| `vault4j.transit.mount` | none | the Transit engine's mount; unset, there is no `VaultTransit`; blank stops startup |
+| `org4j.vault.mount` | `secret` | the KV version 2 mount |
+| `org4j.vault.signing-keys.path` | none | a client's key entry, `%s` its client id (required in the path); unset, there are no signing keys |
+| `org4j.vault.signing-keys.field` | none, required with `path` | the entry's key holding the base64 signing key |
+| `org4j.vault.signing-keys.cache-ttl` | none, required with `path` | how long a key read is used; a missing key is never kept, and a Vault failure never answers with an old key |
+| `org4j.vault.clients.path` | none | the client registry's KV entry; unset, there is no registry |
+| `org4j.vault.clients.cache-ttl` | none, required with `path` | how long one read of the registry is used |
+| `org4j.vault.transit.mount` | none | the Transit engine's mount; unset, there is no `VaultTransit`; blank stops startup |
 
 Where Vault is and how to sign in are Spring Cloud Vault's `spring.cloud.vault.*`.
 
@@ -95,11 +95,11 @@ Cloud Vault's own `vault` checks that Vault is up and unsealed.
 
 ## Tests
 
-- `./gradlew -p platform :vault:test`: every Transit error defined in every language; the
+- `./gradlew test`: every Transit error defined in every language; the
   signing-key cache (one read per TTL, misses, failures),
   ids that aren't client ids, the path check, and that a path without its field or cache time
   stops startup.
-- `./gradlew -p platform :vault:integrationTest`: a real Vault: token and AppRole sign-in, latest
+- `./gradlew integrationTest`: a real Vault: token and AppRole sign-in, latest
   version, missing path, wrong token, rotation after the TTL, and Vault as a configuration source;
   Transit: a value opens only with its own context and not tampered, rewrap after a rotation, a
   stable HMAC, a refused token (unavailable), a missing key (refused), a blank mount that stops

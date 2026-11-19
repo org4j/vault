@@ -1,24 +1,23 @@
-// One platform library in its own repository. uz.khakimjanovich.settings supplies the platform's
-// repositories, its catalog (libs) and the build plugins; gradle.properties says which platform
-// release to build on and where to take it from.
+// An org4j library in its own repository. io.github.org4j.settings supplies org4j's repositories, its
+// catalog (libs) and the build plugins; gradle.properties says which org4j release to build on.
 pluginManagement {
-    // gradle.properties holds the one platform version; only a release build (main) takes the release.
-    def platformVersion = providers.gradleProperty('platformVersion').get()
-    def platformSource = providers.environmentVariable('PLATFORM_SOURCE').orElse(providers.gradleProperty('platformSource')).get()
+    def org4jVersion = providers.gradleProperty('org4jVersion').get()
+    def org4jSource = providers.environmentVariable('ORG4J_SOURCE').orElse(providers.gradleProperty('org4jSource')).get()
     repositories {
-        if (platformSource == 'local') mavenLocal()
+        if (org4jSource == 'local') mavenLocal()
         maven {
-            url = 'https://maven.pkg.github.com/khakimjanovich/*' // every repository's packages
+            url = 'https://maven.pkg.github.com/org4j/*' // every org4j repository's packages
             credentials {
                 username = providers.gradleProperty('gpr.user').orElse(providers.environmentVariable('GH_PACKAGES_ACTOR')).getOrElse('')
                 password = providers.gradleProperty('gpr.key').orElse(providers.environmentVariable('GH_PACKAGES_TOKEN')).getOrElse('')
             }
-            content { includeGroupByRegex 'uz\\.khakimjanovich(\\..+)?' }
+            content { includeGroupByRegex 'io\\.github\\.org4j(\\..+)?' }
         }
         gradlePluginPortal()
     }
-    plugins { id 'uz.khakimjanovich.settings' version(platformSource == 'release' ? platformVersion : "$platformVersion-SNAPSHOT") }
+    // local takes the line of the release (1.0.0 -> 1.x-SNAPSHOT) from ~/.m2
+    plugins { id 'io.github.org4j.settings' version(org4jSource == 'local' ? "${org4jVersion.tokenize('.')[0]}.x-SNAPSHOT" : org4jVersion) }
 }
-plugins { id 'uz.khakimjanovich.settings' }
+plugins { id 'io.github.org4j.settings' }
 
-rootProject.name = 'vault4j' // the artifact: uz.khakimjanovich:vault4j
+rootProject.name = 'vault' // the artifact: io.github.org4j:vault
