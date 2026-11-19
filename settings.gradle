@@ -1,4 +1,4 @@
-// One platform library in its own repository. platform.settings supplies the platform's
+// One platform library in its own repository. uz.khakimjanovich.settings supplies the platform's
 // repositories, its catalog (libs) and the build plugins; gradle.properties says which platform
 // release to build on and where to take it from.
 pluginManagement {
@@ -13,12 +13,12 @@ pluginManagement {
                 username = providers.gradleProperty('gpr.user').orElse(providers.environmentVariable('GH_PACKAGES_ACTOR')).getOrElse('')
                 password = providers.gradleProperty('gpr.key').orElse(providers.environmentVariable('GH_PACKAGES_TOKEN')).getOrElse('')
             }
-            content { includeGroupByRegex 'platform\\..*|uz\\.khakimjanovich(\\..+)?' }
+            content { includeGroupByRegex 'uz\\.khakimjanovich(\\..+)?' }
         }
         gradlePluginPortal()
     }
-    plugins { id 'platform.settings' version(platformSource == 'release' ? platformVersion : "$platformVersion-SNAPSHOT") }
+    plugins { id 'uz.khakimjanovich.settings' version(platformSource == 'release' ? platformVersion : "$platformVersion-SNAPSHOT") }
 }
-plugins { id 'platform.settings' }
+plugins { id 'uz.khakimjanovich.settings' }
 
 rootProject.name = 'vault4j' // the artifact: uz.khakimjanovich:vault4j
