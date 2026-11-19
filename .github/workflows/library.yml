@@ -1,20 +1,21 @@
-# check on every run, a snapshot on every push to develop, a release on main: the platform's
-# shared workflow for its libraries.
+# check on every push and pull request; a tag vX.Y.Z on 1.x releases: the platform's shared workflow
+# for its libraries.
 name: library
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, "*.x"]
+    tags: ["v*"]
   pull_request:
 
 permissions:
-  contents: write # the release tag and the GitHub release
-  packages: write # the snapshot and release packages
+  contents: write # the GitHub release
+  packages: write # the release package
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
   library:
-    uses: khakimjanovich/platform/.github/workflows/library.yml@develop
+    uses: khakimjanovich/platform/.github/workflows/library.yml@1.x
