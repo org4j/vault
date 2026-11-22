@@ -70,4 +70,26 @@ class VaultPropertiesTest {
                     .hasMessageContaining("path")
                     .hasMessageContaining("must contain %s"));
   }
+
+  @Test
+  void keepsTenThousandKeysUnlessToldOtherwise() {
+    var keys =
+        new String[] {
+          "org4j.vault.signing-keys.path=clients/%s",
+          "org4j.vault.signing-keys.field=key",
+          "org4j.vault.signing-keys.cache-ttl=30s"
+        };
+    runner
+        .withPropertyValues(keys)
+        .run(
+            context ->
+                assertThat(context.getBean(VaultSigningKeysProperties.class).maxEntries())
+                    .isEqualTo(10_000));
+    runner
+        .withPropertyValues(keys)
+        .withPropertyValues("org4j.vault.signing-keys.max-entries=0")
+        .run(
+            context ->
+                assertThat(context).getFailure().rootCause().hasMessageContaining("maxEntries"));
+  }
 }

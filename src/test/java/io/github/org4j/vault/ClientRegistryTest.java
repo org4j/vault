@@ -7,11 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -55,28 +51,5 @@ class ClientRegistryTest {
     clock.advance(TTL);
     assertThatThrownBy(() -> registry.find("a")).isInstanceOf(VaultUnavailableException.class);
     assertThatThrownBy(registry::all).isInstanceOf(VaultUnavailableException.class);
-  }
-
-  private static final class TestClock extends Clock {
-    private Instant now = Instant.parse("2026-01-01T00:00:00Z");
-
-    void advance(Duration by) {
-      now = now.plus(by);
-    }
-
-    @Override
-    public ZoneId getZone() {
-      return ZoneOffset.UTC;
-    }
-
-    @Override
-    public Clock withZone(ZoneId zone) {
-      return this;
-    }
-
-    @Override
-    public Instant instant() {
-      return now;
-    }
   }
 }

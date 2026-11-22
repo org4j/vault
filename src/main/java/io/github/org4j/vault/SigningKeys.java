@@ -1,7 +1,6 @@
 package io.github.org4j.vault;
 
 import static io.github.org4j.vault.VaultConstants.CLIENT_ID;
-import static io.github.org4j.vault.VaultConstants.DEFAULT_SIGNING_KEYS_MAX_ENTRIES;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -13,6 +12,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * API clients' request-signing keys, base64 in Vault at the app's path and field. A key is kept for
+ * the TTL, so a burst of signed requests reads Vault once; the least recently used key goes once
+ * {@code maxEntries} are kept. A missing key is never kept, and a Vault failure throws {@link
+ * VaultUnavailableException}, never an old key.
+ */
 public class SigningKeys {
 
   private final VaultSecrets vault;
@@ -20,7 +25,6 @@ public class SigningKeys {
   private final String field;
   private final Duration ttl;
   private final Clock clock;
-  private final int maxEntries;
   private final Map<String, Cached> cache;
 
   private static final class Cached {
@@ -33,10 +37,13 @@ public class SigningKeys {
     }
   }
 
-  public SigningKeys(VaultSecrets vault, String path, String field, Duration ttl, Clock clock) {
-    this(vault, path, field, ttl, clock, DEFAULT_SIGNING_KEYS_MAX_ENTRIES);
-  }
-
+  /**
+   * Keeps keys read from the app's path and field.
+   *
+   * @param path the KV entry of a client's key; {@code %s} is the client id
+   * @param field the entry's key holding the base64 signing key
+   * @param maxEntries how many keys are kept at most
+   */
   public SigningKeys(
       VaultSecrets vault, String path, String field, Duration ttl, Clock clock, int maxEntries) {
     if (maxEntries < 1) {
@@ -47,19 +54,26 @@ public class SigningKeys {
     this.field = Objects.requireNonNull(field, "field must not be null");
     this.ttl = Objects.requireNonNull(ttl, "ttl must not be null");
     this.clock = Objects.requireNonNull(clock, "clock must not be null");
-    this.maxEntries = maxEntries;
     this.cache =
         Collections.synchronizedMap(
             new LinkedHashMap<String, Cached>(16, 0.75f, true) {
               @Override
               protected boolean removeEldestEntry(Map.Entry<String, Cached> eldest) {
-                return size() > SigningKeys.this.maxEntries;
+                return size() > maxEntries;
               }
             });
   }
 
+  /**
+   * A client's signing key.
+   *
+   * @return empty when none is set, or when the id can't be a client id (never a path)
+   * @throws VaultUnavailableException when the key has to be read and Vault can't be
+   */
   public Optional<byte[]> find(String clientId) {
-    if (!CLIENT_ID.matcher(clientId).matches()) return Optional.empty();
+    if (!CLIENT_ID.matcher(clientId).matches()) {
+      return Optional.empty();
+    }
     var now = clock.instant();
     var cached = cache.get(clientId);
     if (cached != null) {
@@ -77,11 +91,7 @@ public class SigningKeys {
     return key;
   }
 
-  public int cacheSize() {
+  int cacheSize() {
     return cache.size();
-  }
-
-  public int maxEntries() {
-    return maxEntries;
   }
 }
