@@ -2,6 +2,7 @@ package io.github.org4j.vault;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -38,7 +39,7 @@ class VaultTransitTest {
     vaultOperations = mock(VaultOperations.class);
     transitOperations = mock(VaultTransitOperations.class);
     when(vaultOperations.opsForTransit("transit")).thenReturn(transitOperations);
-    vaultTransit = new VaultTransit(vaultOperations, "transit");
+    vaultTransit = new VaultTransit(vaultOperations, "transit", Masking.empty());
   }
 
   @Test
@@ -89,54 +90,42 @@ class VaultTransitTest {
   }
 
   @Test
-  void refusedStatusesMapToRefusedAndOthersToUnavailable() {
-    when(transitOperations.encrypt(eq("key"), any(Plaintext.class)))
-        .thenThrow(
-            new VaultException(
-                "bad input",
-                HttpClientErrorException.create(
-                    HttpStatus.BAD_REQUEST, "Bad Request", null, null, null)))
-        .thenThrow(
-            new VaultException(
-                "not found",
-                HttpClientErrorException.create(
-                    HttpStatus.NOT_FOUND, "Not Found", null, null, null)))
-        .thenThrow(
-            new VaultException(
-                "server error",
-                HttpClientErrorException.create(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Server Error", null, null, null)))
-        .thenThrow(new RestClientException("network timeout"));
-
-    assertThatThrownBy(() -> vaultTransit.encrypt("key", "ctx", "val"))
-        .isInstanceOfSatisfying(
-            GeneralException.class,
-            e -> assertThat(e.getStatus()).isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_REFUSED));
-
-    assertThatThrownBy(() -> vaultTransit.encrypt("key", "ctx", "val"))
-        .isInstanceOfSatisfying(
-            GeneralException.class,
-            e -> assertThat(e.getStatus()).isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_REFUSED));
-
-    assertThatThrownBy(() -> vaultTransit.encrypt("key", "ctx", "val"))
-        .isInstanceOfSatisfying(
-            GeneralException.class,
-            e ->
-                assertThat(e.getStatus())
-                    .isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_UNAVAILABLE));
-
-    assertThatThrownBy(() -> vaultTransit.encrypt("key", "ctx", "val"))
-        .isInstanceOfSatisfying(
-            GeneralException.class,
-            e ->
-                assertThat(e.getStatus())
-                    .isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_UNAVAILABLE));
+  void a400Or404IsRefusedAndAnythingElseUnavailable() {
+    assertThat(statusFor(clientError(HttpStatus.BAD_REQUEST)))
+        .isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_REFUSED);
+    assertThat(statusFor(clientError(HttpStatus.NOT_FOUND)))
+        .isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_REFUSED);
+    assertThat(statusFor(clientError(HttpStatus.INTERNAL_SERVER_ERROR)))
+        .isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_UNAVAILABLE);
+    assertThat(statusFor(new RestClientException("network timeout")))
+        .isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_UNAVAILABLE);
   }
 
   @Test
-  void nullParametersAreRefused() {
-    assertThatThrownBy(() -> new VaultTransit(null, "transit"))
-        .isInstanceOf(NullPointerException.class);
+  void aMissingKeyIsRefused() {
+    when(transitOperations.getKey("gone")).thenReturn(null);
+    assertThatThrownBy(() -> vaultTransit.latestPrefix("gone"))
+        .isInstanceOfSatisfying(
+            GeneralException.class,
+            e -> assertThat(e.getStatus()).isEqualTo(VaultExceptionStatus.VAULT_TRANSIT_REFUSED));
+  }
+
+  private static VaultException clientError(HttpStatus status) {
+    return new VaultException(
+        status.getReasonPhrase(),
+        HttpClientErrorException.create(status, status.getReasonPhrase(), null, null, null));
+  }
+
+  private Object statusFor(RuntimeException failure) {
+    when(transitOperations.encrypt(eq("key"), any(Plaintext.class))).thenThrow(failure);
+    var thrown =
+        catchThrowableOfType(
+            GeneralException.class, () -> vaultTransit.encrypt("key", "ctx", "val"));
+    return thrown.getStatus();
+  }
+
+  @Test
+  void aMissingMaskingIsRefused() {
     assertThatThrownBy(() -> new VaultTransit(vaultOperations, "transit", null))
         .isInstanceOf(NullPointerException.class);
   }

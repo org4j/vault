@@ -15,6 +15,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.vault.core.VaultTemplate;
 
+/**
+ * The library's beans, once Spring Cloud Vault has made its {@code VaultTemplate}: {@link
+ * VaultSecrets} always, {@link SigningKeys}, {@link ClientRegistry} and {@link VaultTransit} when
+ * their settings name a path or mount, and the token health indicator with the actuator.
+ */
 @AutoConfiguration(afterName = VaultConstants.SPRING_CLOUD_VAULT)
 @ConditionalOnBean(VaultTemplate.class)
 @EnableConfigurationProperties({
@@ -45,7 +50,7 @@ public class VaultAutoConfiguration {
         field,
         ttl,
         Clock.systemUTC(),
-        properties.resolvedMaxEntries());
+        properties.maxEntries());
   }
 
   @Bean
@@ -70,7 +75,7 @@ public class VaultAutoConfiguration {
         VaultTransitProperties properties,
         ObjectProvider<Masking> masking) {
       return new VaultTransit(
-          vaultTemplate, properties.mount(), masking.getIfAvailable(Masking::defaults));
+          vaultTemplate, properties.mount(), masking.getIfAvailable(Masking::empty));
     }
   }
 

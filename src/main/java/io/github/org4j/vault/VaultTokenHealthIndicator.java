@@ -1,22 +1,27 @@
 package io.github.org4j.vault;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.vault.VaultException;
-import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.core.VaultOperations;
 import org.springframework.web.client.RestClientException;
 
-@RequiredArgsConstructor
+/**
+ * UP while Vault accepts the app's token. Down names only the exception's class: Vault's message
+ * may quote the token.
+ */
 class VaultTokenHealthIndicator implements HealthIndicator {
 
-  private final VaultTemplate vault;
+  private final VaultOperations vault;
+
+  VaultTokenHealthIndicator(VaultOperations vault) {
+    this.vault = vault;
+  }
 
   @Override
   public Health health() {
     try {
-      var self = vault.read(VaultConstants.TOKEN_LOOKUP_SELF);
-      return self == null
+      return vault.read(VaultConstants.TOKEN_LOOKUP_SELF) == null
           ? Health.down()
               .withDetail(VaultConstants.HEALTH_ERROR_DETAIL, VaultConstants.HEALTH_EMPTY_ANSWER)
               .build()
