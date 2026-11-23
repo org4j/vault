@@ -3,8 +3,15 @@ package io.github.org4j.vault;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.vault.core.VaultTemplate;
 
@@ -14,6 +21,39 @@ class VaultPropertiesTest {
       new ApplicationContextRunner()
           .withConfiguration(AutoConfigurations.of(VaultAutoConfiguration.class))
           .withBean(VaultTemplate.class, () -> mock(VaultTemplate.class));
+
+  @Test
+  void withTheActuatorTheTokenHasAHealthIndicator() {
+    runner.run(context -> assertThat(context).hasBean("vaultTokenHealthIndicator"));
+  }
+
+  @Test
+  void anAppWithoutTheActuatorStarts() throws Exception {
+    var urls =
+        Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator, -1))
+            .filter(entry -> !entry.contains("spring-boot-health"))
+            .map(VaultPropertiesTest::url)
+            .toArray(URL[]::new);
+    try (var withoutActuator = new URLClassLoader(urls, ClassLoader.getPlatformClassLoader())) {
+      assertThat(
+              withoutActuator.getResource(
+                  HealthIndicator.class.getName().replace('.', '/') + ".class"))
+          .isNull();
+      var thread = Thread.currentThread();
+      var original = thread.getContextClassLoader();
+      thread.setContextClassLoader(withoutActuator);
+      try {
+        var started =
+            withoutActuator
+                .loadClass(WithoutTheActuator.class.getName())
+                .getMethod("start")
+                .invoke(null);
+        assertThat(started).isEqualTo("vaultSecrets");
+      } finally {
+        thread.setContextClassLoader(original);
+      }
+    }
+  }
 
   @Test
   void withoutAPathThereAreNoSigningKeys() {
@@ -91,5 +131,13 @@ class VaultPropertiesTest {
         .run(
             context ->
                 assertThat(context).getFailure().rootCause().hasMessageContaining("maxEntries"));
+  }
+
+  private static URL url(String classpathEntry) {
+    try {
+      return Path.of(classpathEntry).toUri().toURL();
+    } catch (MalformedURLException e) {
+      throw new IllegalArgumentException(classpathEntry, e);
+    }
   }
 }

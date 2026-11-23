@@ -79,10 +79,16 @@ public class VaultAutoConfiguration {
     }
   }
 
-  @Bean
+  // A class of its own: a method returning HealthIndicator here would fail to load without the
+  // actuator.
+  @Configuration(proxyBeanMethods = false)
   @ConditionalOnClass(HealthIndicator.class)
-  @ConditionalOnMissingBean(name = VaultConstants.HEALTH_INDICATOR_BEAN)
-  HealthIndicator vaultTokenHealthIndicator(VaultTemplate vaultTemplate) {
-    return new VaultTokenHealthIndicator(vaultTemplate);
+  static class Health {
+
+    @Bean
+    @ConditionalOnMissingBean(name = VaultConstants.HEALTH_INDICATOR_BEAN)
+    HealthIndicator vaultTokenHealthIndicator(VaultTemplate vaultTemplate) {
+      return new VaultTokenHealthIndicator(vaultTemplate);
+    }
   }
 }
